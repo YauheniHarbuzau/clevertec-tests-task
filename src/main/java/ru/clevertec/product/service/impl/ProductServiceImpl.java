@@ -15,39 +15,38 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductMapper mapper;
+    private final ProductMapper productMapper;
     private final ProductRepository productRepository;
 
     @Override
     public InfoProductDto get(UUID uuid) {
-        return mapper.toInfoProductDto(
-                productRepository.findById(uuid)
-                .orElseThrow(() -> new ProductNotFoundException(uuid))
-        );
+        return productRepository.findById(uuid)
+                .map(productMapper::toInfoProductDto)
+                .orElseThrow(() -> new ProductNotFoundException(uuid));
     }
 
     @Override
     public List<InfoProductDto> getAll() {
         return productRepository.findAll()
                 .stream()
-                .map(mapper::toInfoProductDto)
+                .map(productMapper::toInfoProductDto)
                 .toList();
     }
 
     @Override
     public UUID create(ProductDto productDto) {
         Product productToCreate = productRepository.save(
-                mapper.toProduct(productDto)
-        );
+                productMapper.toProduct(productDto));
+
         return productToCreate.getUuid();
     }
 
     @Override
     public void update(UUID uuid, ProductDto productDto) {
-        Product productToUpdate = mapper.merge(
-                productRepository.findById(uuid).orElseThrow(() -> new ProductNotFoundException(uuid)),
-                productDto
-        );
+        Product productToUpdate = productRepository.findById(uuid)
+                .map(product -> productMapper.merge(product, productDto))
+                .orElseThrow(() -> new ProductNotFoundException(uuid));
+
         productRepository.save(productToUpdate);
     }
 

@@ -19,12 +19,16 @@ public class ProductTestData {
 
     @Builder.Default
     private UUID uuid = TEST_UUID_1;
+
     @Builder.Default
     private String name = "арбуз";
+
     @Builder.Default
     private String description = "тестируемый";
+
     @Builder.Default
     private BigDecimal price = BigDecimal.valueOf(10.00);
+
     @Builder.Default
     private LocalDateTime created = LocalDateTime.of(2023, OCTOBER, 30, 12, 0, 0);
 

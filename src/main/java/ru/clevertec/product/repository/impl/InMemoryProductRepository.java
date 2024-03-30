@@ -13,18 +13,18 @@ import static ru.clevertec.product.util.ProductValidator.isValid;
 public class InMemoryProductRepository implements ProductRepository {
 
     private final ProductData productData = new ProductData();
-    private final Map<UUID, Product> data = productData.getProductDataMap();
+    private final Map<UUID, Product> productDataMap = productData.getProductDataMap();
 
     @Override
     public Optional<Product> findById(UUID uuid) {
-        return data.containsKey(uuid) ?
-                Optional.of(data.get(uuid)) :
+        return productDataMap.containsKey(uuid) ?
+                Optional.of(productDataMap.get(uuid)) :
                 Optional.empty();
     }
 
     @Override
     public List<Product> findAll() {
-        return data.values()
+        return productDataMap.values()
                 .stream()
                 .toList();
     }
@@ -36,20 +36,15 @@ public class InMemoryProductRepository implements ProductRepository {
         }
 
         if (product.getUuid() == null) {
-            UUID uuid;
-            do {
-                uuid = UUID.randomUUID();
-            } while (data.containsKey(uuid));
-
-            product.setUuid(uuid);
+            product.setUuid(UUID.randomUUID());
         }
 
-        data.put(product.getUuid(), product);
+        productDataMap.put(product.getUuid(), product);
         return product;
     }
 
     @Override
     public void delete(UUID uuid) {
-        data.remove(uuid);
+        productDataMap.remove(uuid);
     }
 }

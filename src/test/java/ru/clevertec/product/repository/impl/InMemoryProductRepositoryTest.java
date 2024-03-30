@@ -22,7 +22,7 @@ import static ru.clevertec.product.testdatautil.TestConstants.TEST_UUID_4;
 
 class InMemoryProductRepositoryTest {
 
-    private ProductRepository productRepository = new InMemoryProductRepository();
+    private final ProductRepository productRepository = new InMemoryProductRepository();
 
     @Test
     void checkFindByIdShouldReturnProduct() {
@@ -38,7 +38,7 @@ class InMemoryProductRepositoryTest {
         // when
         Product actualProduct = productRepository.findById(TEST_UUID_1).get();
 
-        // than
+        // then
         assertEquals(expectedProduct, actualProduct);
     }
 
@@ -47,7 +47,7 @@ class InMemoryProductRepositoryTest {
         // given, when
         Optional<Product> actualProduct = productRepository.findById(TEST_UUID_4);
 
-        // than
+        // then
         assertEquals(Optional.empty(), actualProduct);
     }
 
@@ -59,7 +59,7 @@ class InMemoryProductRepositoryTest {
         // when
         int actualListSize = productRepository.findAll().size();
 
-        // than
+        // then
         assertEquals(expectedListSize, actualListSize);
     }
 
@@ -78,7 +78,7 @@ class InMemoryProductRepositoryTest {
         int actualListSize = actualList.size();
         boolean isContains = actualList.contains(productToSave);
 
-        // than
+        // then
         assertAll(
                 () -> assertEquals(expectedListSize, actualListSize),
                 () -> assertTrue(isContains)
@@ -95,7 +95,7 @@ class InMemoryProductRepositoryTest {
                 .withPrice(BigDecimal.valueOf(-1.0))
                 .build().buildProduct();
 
-        // when, than
+        // when, then
         assertAll(
                 () -> assertThrows(IllegalArgumentException.class, () -> productRepository.save(firstProductToSave)),
                 () -> assertThrows(IllegalArgumentException.class, () -> productRepository.save(secondProductToSave))
@@ -115,7 +115,7 @@ class InMemoryProductRepositoryTest {
         int actualListSize = actualList.size();
         boolean isContains = actualList.stream().anyMatch(product -> uuidToDelete.equals(product.getUuid()));
 
-        // than
+        // then
         assertAll(
                 () -> assertEquals(expectedListSize, actualListSize),
                 () -> assertFalse(isContains)

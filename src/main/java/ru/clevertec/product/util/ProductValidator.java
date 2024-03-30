@@ -16,7 +16,7 @@ public class ProductValidator {
                 (product.getDescription() == null ||
                 product.getDescription().matches(PRODUCT_DESCRIPTION_PATTERN)) &&
                 product.getPrice() != null &&
-                product.getPrice().compareTo(BigDecimal.valueOf(0.0)) >= 0 &&
+                product.getPrice().compareTo(BigDecimal.ZERO) >= 0 &&
                 product.getCreated() != null;
     }
 
@@ -26,6 +26,6 @@ public class ProductValidator {
                 (productDto.description() == null ||
                 productDto.description().matches(PRODUCT_DESCRIPTION_PATTERN)) &&
                 productDto.price() != null &&
-                productDto.price().compareTo(BigDecimal.valueOf(0.0)) >= 0;
+                productDto.price().compareTo(BigDecimal.ZERO) >= 0;
     }
 }

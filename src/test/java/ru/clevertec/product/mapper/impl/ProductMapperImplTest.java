@@ -15,7 +15,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 
 class ProductMapperImplTest {
 
-    private ProductMapper mapper = new ProductMapperImpl();
+    private final ProductMapper productMapper = new ProductMapperImpl();
 
     @Test
     void checkToProductShouldReturnCorrectProduct() {
@@ -24,15 +24,15 @@ class ProductMapperImplTest {
                 .build().buildProductDto();
 
         // when
-        Product actualProduct = mapper.toProduct(mappingProductDto);
+        Product actualProduct = productMapper.toProduct(mappingProductDto);
 
-        // than
+        // then
         assertThat(actualProduct)
                 .hasFieldOrPropertyWithValue(Product.Fields.uuid, isNull())
                 .hasFieldOrPropertyWithValue(Product.Fields.name, mappingProductDto.name())
                 .hasFieldOrPropertyWithValue(Product.Fields.description, mappingProductDto.description())
-                .hasFieldOrPropertyWithValue(Product.Fields.price, mappingProductDto.price());
-        assertThat(actualProduct.getCreated()).isNotNull();
+                .hasFieldOrPropertyWithValue(Product.Fields.price, mappingProductDto.price())
+                .extracting(Product::getCreated).isNotNull();
     }
 
     @Test
@@ -42,9 +42,9 @@ class ProductMapperImplTest {
                 .build().buildProduct();
 
         // when
-        InfoProductDto actualInfoProductDto = mapper.toInfoProductDto(mappingProduct);
+        InfoProductDto actualInfoProductDto = productMapper.toInfoProductDto(mappingProduct);
 
-        // than
+        // then
         assertThat(actualInfoProductDto)
                 .hasFieldOrPropertyWithValue("uuid", mappingProduct.getUuid())
                 .hasFieldOrPropertyWithValue("name", mappingProduct.getName())
@@ -64,14 +64,14 @@ class ProductMapperImplTest {
                 .build().buildProductDto();
 
         // when
-        Product actualUpdatedProduct = mapper.merge(productToMerge, productDtoToMerge);
+        Product actualUpdatedProduct = productMapper.merge(productToMerge, productDtoToMerge);
 
-        // than
+        // then
         assertThat(actualUpdatedProduct)
-                .hasFieldOrPropertyWithValue("uuid", productToMerge.getUuid())
-                .hasFieldOrPropertyWithValue("name", productDtoToMerge.name())
-                .hasFieldOrPropertyWithValue("description", productDtoToMerge.description())
-                .hasFieldOrPropertyWithValue("price", productDtoToMerge.price())
-                .hasFieldOrPropertyWithValue("created", productToMerge.getCreated());
+                .hasFieldOrPropertyWithValue(Product.Fields.uuid, productToMerge.getUuid())
+                .hasFieldOrPropertyWithValue(Product.Fields.name, productDtoToMerge.name())
+                .hasFieldOrPropertyWithValue(Product.Fields.description, productDtoToMerge.description())
+                .hasFieldOrPropertyWithValue(Product.Fields.price, productDtoToMerge.price())
+                .hasFieldOrPropertyWithValue(Product.Fields.created, productToMerge.getCreated());
     }
 }

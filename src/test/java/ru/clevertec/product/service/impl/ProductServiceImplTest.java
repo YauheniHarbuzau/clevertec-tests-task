@@ -42,11 +42,14 @@ import static ru.clevertec.product.testdatautil.TestConstants.TEST_UUID_3;
 class ProductServiceImplTest {
 
     @Mock
-    private ProductRepository productRepository = new InMemoryProductRepository();
+    private final ProductRepository productRepository = new InMemoryProductRepository();
+
     @Mock
-    private ProductMapper mapper = new ProductMapperImpl();
+    private final ProductMapper productMapper = new ProductMapperImpl();
+
     @InjectMocks
     private ProductServiceImpl productService;
+
     @Captor
     private ArgumentCaptor<Product> productCaptor;
 
@@ -57,14 +60,18 @@ class ProductServiceImplTest {
             // given
             Product product = ProductTestData.builder()
                     .build().buildProduct();
+            InfoProductDto productDto = ProductTestData.builder()
+                    .build().buildInfoProductDto();
 
             doReturn(Optional.of(product))
                     .when(productRepository).findById(TEST_UUID_1);
+            doReturn(productDto)
+                    .when(productMapper).toInfoProductDto(product);
 
             // when
             productService.get(TEST_UUID_1);
 
-            // than
+            // then
             verify(productRepository).findById(TEST_UUID_1);
         }
 
@@ -79,12 +86,12 @@ class ProductServiceImplTest {
             doReturn(Optional.of(expectedProduct))
                     .when(productRepository).findById(TEST_UUID_1);
             doReturn(expectedProductDto)
-                    .when(mapper).toInfoProductDto(expectedProduct);
+                    .when(productMapper).toInfoProductDto(expectedProduct);
 
             // when
             InfoProductDto actualProductDto = productService.get(TEST_UUID_1);
 
-            // than
+            // then
             assertEquals(expectedProductDto, actualProductDto);
         }
 
@@ -104,9 +111,9 @@ class ProductServiceImplTest {
             doReturn(Optional.of(product))
                     .when(productRepository).findById(uuidFound);
             doReturn(productDto)
-                    .when(mapper).toInfoProductDto(product);
+                    .when(productMapper).toInfoProductDto(product);
 
-            // when, than
+            // when, then
             assertAll(
                     () -> assertDoesNotThrow(() -> productService.get(uuidFound)),
                     () -> assertThrows(ProductNotFoundException.class, () -> productService.get(uuidNotFound))
@@ -121,7 +128,7 @@ class ProductServiceImplTest {
             doReturn(null)
                     .when(productRepository).findById(uuid);
 
-            // when, than
+            // when, then
             assertThrows(NullPointerException.class, () -> productService.get(uuid));
         }
     }
@@ -133,7 +140,7 @@ class ProductServiceImplTest {
             // given, when
             productService.getAll();
 
-            // than
+            // then
             verify(productRepository).findAll();
         }
 
@@ -158,14 +165,14 @@ class ProductServiceImplTest {
             doReturn(List.of(product1, product2))
                     .when(productRepository).findAll();
             doReturn(productDto1)
-                    .when(mapper).toInfoProductDto(product1);
+                    .when(productMapper).toInfoProductDto(product1);
             doReturn(productDto2)
-                    .when(mapper).toInfoProductDto(product2);
+                    .when(productMapper).toInfoProductDto(product2);
 
             // when
             List<InfoProductDto> actualProductDtoList = productService.getAll();
 
-            // than
+            // then
             assertAll(
                     () -> assertEquals(expectedProductDtoList, actualProductDtoList),
                     () -> assertEquals(2, actualProductDtoList.size())
@@ -182,7 +189,7 @@ class ProductServiceImplTest {
             // when
             List<InfoProductDto> actualProductDtoList = productService.getAll();
 
-            // than
+            // then
             assertEquals(expectedProductDtoList, actualProductDtoList);
         }
     }
@@ -198,14 +205,14 @@ class ProductServiceImplTest {
                     .build().buildProductDto();
 
             doReturn(product)
-                    .when(mapper).toProduct(productDto);
+                    .when(productMapper).toProduct(productDto);
             doReturn(product)
                     .when(productRepository).save(product);
 
             // when
             productService.create(productDto);
 
-            // than
+            // then
             verify(productRepository).save(product);
         }
 
@@ -219,14 +226,14 @@ class ProductServiceImplTest {
                     .build().buildProductDto();
 
             doReturn(product)
-                    .when(mapper).toProduct(productDto);
+                    .when(productMapper).toProduct(productDto);
             doReturn(product)
                     .when(productRepository).save(product);
 
             // when
             productService.create(productDto);
 
-            // than
+            // then
             verify(productRepository).save(productCaptor.capture());
             assertNull(productCaptor.getValue().getUuid());
         }
@@ -257,14 +264,14 @@ class ProductServiceImplTest {
             doReturn(Optional.of(actualProduct))
                     .when(productRepository).findById(actualUuid);
             doReturn(expectedProduct)
-                    .when(mapper).merge(actualProduct, actualProductDto);
+                    .when(productMapper).merge(actualProduct, actualProductDto);
             doReturn(expectedProduct)
                     .when(productRepository).save(expectedProduct);
 
             // when
             productService.update(actualUuid, actualProductDto);
 
-            // than
+            // then
             verify(productRepository).save(productCaptor.capture());
             assertAll(
                     () -> assertEquals(expectedProduct.getUuid(), productCaptor.getValue().getUuid()),
@@ -299,11 +306,11 @@ class ProductServiceImplTest {
             doReturn(Optional.of(actualProduct))
                     .when(productRepository).findById(uuidFound);
             doReturn(expectedProduct)
-                    .when(mapper).merge(actualProduct, actualProductDto);
+                    .when(productMapper).merge(actualProduct, actualProductDto);
             doReturn(expectedProduct)
                     .when(productRepository).save(expectedProduct);
 
-            // when, than
+            // when, then
             assertAll(
                     () -> assertDoesNotThrow(() -> productService.update(uuidFound, actualProductDto)),
                     () -> assertThrows(ProductNotFoundException.class, () -> productService.update(uuidNotFound, actualProductDto))
@@ -319,7 +326,7 @@ class ProductServiceImplTest {
             // given, when
             productService.delete(argument);
 
-            // than
+            // then
             verify(productRepository, times(1)).delete(argument);
         }
 
